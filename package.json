@@ -1,0 +1,48 @@
+{
+  "name": "n8n-nodes-pdf-text",
+  "version": "0.1.0",
+  "description": "n8n community node to insert text at X/Y positions into existing PDFs using pdf-lib",
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "pdf",
+    "pdf-lib",
+    "text"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/x88a9/pdflib-custom-node",
+  "author": {
+    "name": "x88a9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/x88a9/pdflib-custom-node.git"
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && npm run copy:assets",
+    "copy:assets": "node copy-assets.js",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "nodes": [
+      "dist/nodes/PdfText/PdfText.node.js"
+    ]
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  },
+  "devDependencies": {
+    "n8n-workflow": "*",
+    "typescript": "^5.4.0",
+    "@types/node": "^20.11.0"
+  }
+}

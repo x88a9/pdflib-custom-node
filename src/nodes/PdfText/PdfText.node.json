@@ -1,0 +1,15 @@
+{
+	"node": "n8n-nodes-pdf-text.pdfText",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Utility"],
+	"resources": {
+		"primaryDocumentation": [
+			{
+				"url": "https://github.com/x88a9/pdflib-custom-node"
+			}
+		],
+		"credentialDocumentation": []
+	},
+	"alias": ["PDF", "pdf-lib", "text", "stamp", "overlay"]
+}

@@ -1,0 +1,9 @@
+node_modules/
+*.log
+npm-debug.log*
+.DS_Store
+.env
+*.tsbuildinfo
+
+# dist/ is intentionally committed so the package can be installed
+# directly from GitHub without a build step.

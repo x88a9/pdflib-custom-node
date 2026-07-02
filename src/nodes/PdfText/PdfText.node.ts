@@ -46,6 +46,25 @@ function hexToRgb(hex: string) {
 	return rgb(r, g, b);
 }
 
+/**
+ * Resolves the output file name.
+ * - If the user supplied a name, it is used as-is and ".pdf" is appended when
+ *   missing (case-insensitive), so "test" and "test.pdf" both yield "test.pdf".
+ * - If left empty, the input file name is reused with an "_edited" suffix before
+ *   the extension, e.g. "report.pdf" -> "report_edited.pdf". When there is no
+ *   input file name it falls back to "output_edited.pdf".
+ */
+function resolveOutputFileName(userInput: string, inputFileName?: string): string {
+	const trimmed = (userInput || '').trim();
+	if (trimmed) {
+		return /\.pdf$/i.test(trimmed) ? trimmed : `${trimmed}.pdf`;
+	}
+
+	const source = (inputFileName || '').trim() || 'output.pdf';
+	const base = source.replace(/\.pdf$/i, '');
+	return `${base}_edited.pdf`;
+}
+
 export class PdfText implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'PDF Text',
@@ -155,6 +174,15 @@ export class PdfText implements INodeType {
 				description:
 					'Name of the binary property to write the modified PDF to on the output item',
 			},
+			{
+				displayName: 'Output File Name',
+				name: 'outputFileName',
+				type: 'string',
+				default: '',
+				placeholder: 'e.g. invoice or invoice.pdf',
+				description:
+					'File name for the output PDF. The ".pdf" extension is added automatically if you leave it off. If empty, the input file name is used with an "_edited" suffix (e.g. "report.pdf" becomes "report_edited.pdf").',
+			},
 		],
 	};
 
@@ -172,6 +200,11 @@ export class PdfText implements INodeType {
 					'outputBinaryProperty',
 					itemIndex,
 				) as string;
+				const outputFileName = this.getNodeParameter(
+					'outputFileName',
+					itemIndex,
+					'',
+				) as string;
 				const pageNumber = this.getNodeParameter('pageNumber', itemIndex) as number;
 
 				const textFieldsCollection = this.getNodeParameter(
@@ -181,7 +214,7 @@ export class PdfText implements INodeType {
 				) as TextFieldValue[];
 
 				// Load the incoming PDF binary.
-				this.helpers.assertBinaryData(itemIndex, inputBinaryProperty);
+				const inputBinary = this.helpers.assertBinaryData(itemIndex, inputBinaryProperty);
 				const pdfBuffer = await this.helpers.getBinaryDataBuffer(
 					itemIndex,
 					inputBinaryProperty,
@@ -230,17 +263,21 @@ export class PdfText implements INodeType {
 
 				const modifiedPdf = await pdfDoc.save();
 
+				const fileName = resolveOutputFileName(outputFileName, inputBinary.fileName);
+
+				// Output only the generated PDF — the input binary is intentionally
+				// not carried through, so the output item contains just the result.
 				const newItem: INodeExecutionData = {
 					json: items[itemIndex].json,
-					binary: { ...(items[itemIndex].binary ?? {}) },
+					binary: {
+						[outputBinaryProperty]: await this.helpers.prepareBinaryData(
+							Buffer.from(modifiedPdf),
+							fileName,
+							'application/pdf',
+						),
+					},
 					pairedItem: { item: itemIndex },
 				};
-
-				newItem.binary![outputBinaryProperty] = await this.helpers.prepareBinaryData(
-					Buffer.from(modifiedPdf),
-					'output.pdf',
-					'application/pdf',
-				);
 
 				returnData.push(newItem);
 			} catch (error) {

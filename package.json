@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-pdf-text",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "description": "n8n community node to insert text at X/Y positions into existing PDFs using pdf-lib",
   "keywords": [
     "n8n-community-node-package",

@@ -48,6 +48,10 @@ Then restart n8n.
 | **Text Fields** | One or more text entries to draw (see below). |
 | **Page Number** | 1-based page to draw on. Use `0` to apply text to **all** pages. |
 | **Output Binary Property** | Name of the binary property to write the result to (default `data`). |
+| **Output File Name** | File name for the resulting PDF. `.pdf` is appended automatically if omitted (so `invoice` and `invoice.pdf` both produce `invoice.pdf`). If left empty, the input file name is reused with an `_edited` suffix (e.g. `report.pdf` → `report_edited.pdf`). |
+
+> The output item contains **only the generated PDF** — the original input file is
+> not carried through.
 
 Each **Text Field** has:
 
